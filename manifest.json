@@ -1,0 +1,10 @@
+{
+  "name": "Tetris Arcade",
+  "short_name": "Tetris",
+  "description": "Juego de Tetris clásico estilo arcade",
+  "start_url": "/index.html",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a"
+}
