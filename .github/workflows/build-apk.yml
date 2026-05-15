@@ -1,0 +1,87 @@
+name: 🎮 Build Tetris APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build APK with Capacitor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install Capacitor
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: 🌐 Prepare web files (www/)
+        run: |
+          mkdir -p www
+          cp index.html www/
+          cp manifest.json www/
+          cp sw.js www/
+          cp icon-192.png www/
+          cp icon-512.png www/
+
+      - name: ⚙️ Create capacitor.config.json
+        run: |
+          cat > capacitor.config.json << 'EOF'
+          {
+            "appId": "com.tetris.arcade",
+            "appName": "Tetris Arcade",
+            "webDir": "www",
+            "bundledWebRuntime": false
+          }
+          EOF
+
+      - name: 🤖 Add Android platform
+        run: npx cap add android
+
+      - name: 🔧 Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 🔨 Build debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: 📤 Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tetris-arcade-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: 🏷️ Create Release with APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: "🎮 Tetris Arcade v1.0.${{ github.run_number }}"
+          body: |
+            ## 📱 APK listo para instalar
+
+            ### ⬇️ Cómo instalar
+            1. Descarga el archivo `tetris-arcade.apk`
+            2. En tu celular: **Ajustes → Seguridad → Fuentes desconocidas** ✅
+            3. Abre el APK descargado e instala
+
+            > Compilado automáticamente con GitHub Actions 🤖
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          token: ${{ secrets.GITHUB_TOKEN }}
