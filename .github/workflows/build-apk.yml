@@ -14,10 +14,10 @@ jobs:
       - name: 📥 Checkout repo
         uses: actions/checkout@v4
 
-      - name: ☕ Setup Java 17
+      - name: ☕ Setup Java 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: 🟢 Setup Node.js
@@ -78,7 +78,7 @@ jobs:
             ## 📱 APK listo para instalar
 
             ### ⬇️ Cómo instalar
-            1. Descarga el archivo `tetris-arcade.apk`
+            1. Descarga el archivo `app-debug.apk`
             2. En tu celular: **Ajustes → Seguridad → Fuentes desconocidas** ✅
             3. Abre el APK descargado e instala
 
